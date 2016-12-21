@@ -10,8 +10,8 @@ mounting_screw_hole_diameter = 2;  // NOT MEASURED
 mounting_screw_countersink_diameter = 10;  // NOT MEASURED
 mounting_screw_plate_depth = 4.0;  // chosen BUT NOT WELL
 
-plate_start_from_left = 32;   // NOT MEASURED
-plate_end_from_left = 134;  // measured mm
+plate_start = 32;   // NOT MEASURED
+plate_end = 134;  // measured mm
 plate_depth = 15;  // NOT MEASURED
 
 line_cord_start = 160.0;
