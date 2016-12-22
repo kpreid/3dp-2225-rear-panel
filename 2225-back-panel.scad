@@ -39,7 +39,7 @@ module left_mounting_screw_negative() {
     translate([mounting_screw_x_inset, base_height / 2, mounting_screw_plate_depth]) cylinder(r=mounting_screw_countersink_diameter, h=total_depth);
     
     // mounting hook
-    translate([mounting_screw_x_inset, hook_y_inset, 0]) cube([hook_width, hook_height, hook_depth]);
+    translate([mounting_screw_x_inset, hook_y_inset, -epsilon]) cube([hook_width, hook_height, hook_depth + epsilon]);
 }
 
 difference() {
@@ -56,8 +56,10 @@ difference() {
     
     // mounting screws & matching things
     left_mounting_screw_negative();
-    
     translate([base_width, 0, 0]) mirror([1, 0, 0]) left_mounting_screw_negative();
+    
+    // power transformer plate
+    translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, plate_depth + epsilon]);
     
     // thinning out line cord area
     translate([line_cord_start, -2*general_thickness, general_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*general_thickness, back_face_depth + epsilon]);
@@ -73,7 +75,7 @@ difference() {
     translate([plate_start, 0, 0]) cube([plate_end - plate_start, 0, plate_depth]);
     
     // TODO: spaces for those screws in one corner
-    // TODO: holes for side-panel screws
+    // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
     // TODO: spaces for those upper side plastic frame tabs
     // TODO: ventilation slots
 }
