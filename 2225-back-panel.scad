@@ -3,7 +3,7 @@ base_width = 320.0;  // measured mm
 base_height = 123.0;  // measured mm
 sleeve_depth = 15.0;  // chosen, overkill
 general_thickness = 2.0;  // chosen
-sleeve_thickness = general_thickness;
+sleeve_thickness = 2.5;
 back_face_depth = 25.0;  // chosen
 
 mounting_screw_x_inset = 22;  // measured
@@ -11,7 +11,7 @@ mounting_screw_hole_diameter = 2;  // NOT MEASURED
 mounting_screw_countersink_diameter = 10;  // NOT MEASURED
 mounting_screw_plate_depth = 4.0;  // chosen BUT NOT WELL
 
-hook_width = 10;  // NOT MEASURED
+hook_width = 15;  // NOT MEASURED
 hook_height = 10;
 hook_depth = 10;
 hook_y_inset = 5;  // measured mm
@@ -35,6 +35,24 @@ vent_spacing = 10;
 
 epsilon = 1.0;
 total_depth = sleeve_depth + back_face_depth;
+
+module transition(x1, x2) {
+    translate([x1, -sleeve_thickness - epsilon, -epsilon])
+    scale([1, -10, 1])
+    rotate([90, 0, 0])
+    linear_extrude(height=base_height * 2, scale=0.2) {
+        polygon([
+            [0, 0],
+            [x2 - x1, back_face_depth + epsilon * 2],
+            [x2 - x1 + epsilon, back_face_depth + epsilon * 2],
+            [x2 - x1 + epsilon, 0]]);
+        polygon([
+            [-epsilon, general_thickness],
+            [-epsilon, back_face_depth + general_thickness + epsilon * 2],
+            [x2 - x1, back_face_depth + general_thickness + epsilon * 2],
+            [x2 - x1 + epsilon, back_face_depth + general_thickness + epsilon * 2]]);
+    }
+}
 
 module left_mounting_screw_negative() {
     translate([mounting_screw_x_inset, base_height / 2, -epsilon]) cylinder(r=mounting_screw_hole_diameter, h=total_depth);
@@ -70,7 +88,7 @@ difference() {
     translate([base_width, 0, 0]) mirror([1, 0, 0]) left_mounting_screw_negative();
     
     // power transformer plate
-    translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, plate_depth + epsilon]);
+    translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, max(plate_depth, back_face_depth - sleeve_thickness) + epsilon]);
     
     // thinning out line cord area
     translate([line_cord_start, -2*sleeve_thickness, general_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*sleeve_thickness, back_face_depth + epsilon]);
@@ -78,9 +96,11 @@ difference() {
     // hole punch for line cord (NOT MEASURED IN ENOUGH DETAIL)
     translate([line_cord_start, line_cord_y_clearance, -epsilon]) cube([line_cord_end - line_cord_start, base_height - line_cord_y_clearance * 2, back_face_depth + epsilon]);
     
-    // CRT end
+    // CRT end -- fallback
     translate([crt_center_from_left, base_height / 2, -epsilon])
         cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
+    // CRT end -- unnecessary material clearing
+    translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth - sleeve_thickness + epsilon]);
     
     // ventilation slots
     for (i = [plate_start:vent_spacing:plate_end]) {
@@ -90,8 +110,10 @@ difference() {
         vertical_slot(crt_center_from_left + i);
     }
     
+    transition(line_cord_end, crt_center_from_left - crt_diameter / 2);
+
     // TODO: spaces for those screws in one corner
     // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
     // TODO: spaces for those upper side plastic frame tabs
-    // TODO: ventilation slots
 }
+
