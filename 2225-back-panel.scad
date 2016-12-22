@@ -8,7 +8,7 @@ back_face_depth = 25.0;  // chosen
 
 mounting_screw_x_inset = 22;  // measured
 mounting_screw_hole_diameter = 2;  // NOT MEASURED
-mounting_screw_countersink_diameter = 10;  // NOT MEASURED
+mounting_screw_countersink_diameter = 20;  // NOT MEASURED
 mounting_screw_plate_depth = 4.0;  // chosen BUT NOT WELL
 
 hook_width = 15;  // NOT MEASURED
@@ -60,8 +60,14 @@ module transition(x1, x2) {
 module left_mounting_screw_negative() {
     translate([mounting_screw_x_inset, base_height / 2, -epsilon]) cylinder(r=mounting_screw_hole_diameter, h=total_depth);
 
-    // countersink 
-    translate([mounting_screw_x_inset, base_height / 2, mounting_screw_plate_depth]) cylinder(r=mounting_screw_countersink_diameter, h=total_depth);
+    // countersink
+    translate([mounting_screw_x_inset, base_height / 2, mounting_screw_plate_depth]) cylinder(r=mounting_screw_countersink_diameter / 2, h=total_depth);
+    
+    // add'l material clearance
+    translate([mounting_screw_x_inset, base_height / 2, back_face_depth])
+    scale([mounting_screw_countersink_diameter / 2, base_height / 2, back_face_depth - mounting_screw_plate_depth])
+    scale(1/base_height)
+    sphere(r=base_height);
     
     // mounting hook
     translate([mounting_screw_x_inset, hook_y_inset, -epsilon]) cube([hook_width, hook_height, hook_depth + epsilon]);
@@ -106,10 +112,10 @@ difference() {
     translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth - sleeve_thickness + epsilon]);
     
     // ventilation slots
-    for (i = [plate_start:vent_spacing:plate_end]) {
+    for (i = [plate_start + 5/*fudge*/:vent_spacing:plate_end]) {
         vertical_slot(i);
     }
-    for (i = [-crt_diameter / 2:vent_spacing:crt_diameter / 2]) {
+    for (i = [-crt_diameter / 2 + 5/*fudge*/:vent_spacing:crt_diameter / 2]) {
         vertical_slot(crt_center_from_left + i);
     }
     
