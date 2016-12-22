@@ -50,10 +50,11 @@ module transition(x1, x2) {
         translate([0, 0, -base_height / 4])
         linear_extrude(height=base_height * 2)
         polygon([
-            [-d*epsilon, general_thickness],
-            [-d*epsilon, back_face_depth + general_thickness + epsilon * 2],
-            [x2 - x1, back_face_depth + general_thickness + epsilon * 2],
-            [x2 - x1 + epsilon, back_face_depth + general_thickness + epsilon * 2]]);
+            [-d*epsilon, sleeve_thickness],
+            [-d*epsilon, back_face_depth + sleeve_thickness + epsilon * 2],
+            [x2 - x1, back_face_depth + sleeve_thickness + epsilon * 2],
+            [x2 - x1 + epsilon, back_face_depth + sleeve_thickness + epsilon * 2],
+            [0, sleeve_thickness]]);
     }
 }
 
@@ -100,7 +101,7 @@ difference() {
     translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, max(plate_depth, back_face_depth) + epsilon]);
     
     // thinning out line cord area
-    translate([line_cord_start, -2*sleeve_thickness, general_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*sleeve_thickness, back_face_depth + epsilon]);
+    translate([line_cord_start, -2*sleeve_thickness, sleeve_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*sleeve_thickness, back_face_depth + epsilon]);
     
     // hole punch for line cord (NOT MEASURED IN ENOUGH DETAIL)
     translate([line_cord_start, line_cord_y_clearance, -epsilon]) cube([line_cord_end - line_cord_start, base_height - line_cord_y_clearance * 2, back_face_depth + epsilon]);
