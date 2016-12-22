@@ -47,10 +47,12 @@ difference() {
     translate([0, 0, -sleeve_depth])
     minkowski() {
         cube([base_width, base_height, total_depth / 2]);
-        cylinder(r=general_thickness, h=total_depth / 2);  // TODO kludge
+        cylinder(r=general_thickness, h=total_depth / 2);  // TODO heights are kludge
     }
     // hollow in sleeve for main body
-    translate([0, 0, -sleeve_depth - epsilon]) cube([base_width, base_height, sleeve_depth + epsilon]);
+    color("white")
+    translate([0, 0, -sleeve_depth - epsilon])
+      cube([base_width, base_height, sleeve_depth + epsilon]);
     
     // mounting screws & matching things
     left_mounting_screw_negative();
