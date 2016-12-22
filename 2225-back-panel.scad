@@ -3,6 +3,7 @@ base_width = 320.0;  // measured mm
 base_height = 123.0;  // measured mm
 sleeve_depth = 15.0;  // chosen, overkill
 general_thickness = 2.0;  // chosen
+sleeve_thickness = general_thickness;
 back_face_depth = 25.0;  // chosen
 
 mounting_screw_x_inset = 22;  // measured
@@ -47,17 +48,17 @@ module left_mounting_screw_negative() {
 
 module vertical_slot(x) {
     translate([x, -general_thickness * 2, 0])
-        cube([general_thickness, vent_slot_y_size + general_thickness * 2, back_face_depth * 3 - general_thickness]);
+        cube([general_thickness, vent_slot_y_size + sleeve_thickness * 2, back_face_depth * 3 - sleeve_thickness]);
     translate([x, base_height - vent_slot_y_size, 0]) 
-        cube([general_thickness, vent_slot_y_size + general_thickness * 2, back_face_depth * 3 - general_thickness]);
+        cube([general_thickness, vent_slot_y_size + sleeve_thickness * 2, back_face_depth * 3 - sleeve_thickness]);
 }
 
 difference() {
     // sleeve & surround
-    translate([0, 0, -sleeve_depth])
+    translate([0, 0, -sleeve_depth + sleeve_thickness])
     minkowski() {
-        cube([base_width, base_height, total_depth / 2]);
-        cylinder(r=general_thickness, h=total_depth / 2);  // TODO heights are kludge
+        cube([base_width, base_height, total_depth - sleeve_thickness * 2]);
+        sphere(r=sleeve_thickness);
     }
     // hollow in sleeve for main body
     color("white")
@@ -72,7 +73,7 @@ difference() {
     translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, plate_depth + epsilon]);
     
     // thinning out line cord area
-    translate([line_cord_start, -2*general_thickness, general_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*general_thickness, back_face_depth + epsilon]);
+    translate([line_cord_start, -2*sleeve_thickness, general_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*sleeve_thickness, back_face_depth + epsilon]);
     
     // hole punch for line cord (NOT MEASURED IN ENOUGH DETAIL)
     translate([line_cord_start, line_cord_y_clearance, -epsilon]) cube([line_cord_end - line_cord_start, base_height - line_cord_y_clearance * 2, back_face_depth + epsilon]);
