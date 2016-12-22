@@ -37,15 +37,17 @@ epsilon = 1.0;
 total_depth = sleeve_depth + back_face_depth;
 
 module transition(x1, x2) {
-    translate([x1, -sleeve_thickness - epsilon, -epsilon])
-    scale([1, -10, 1])
-    rotate([90, 0, 0])
-    linear_extrude(height=base_height * 2, scale=0.2) {
+    translate([x1, 0, -epsilon])
+    scale([1, -1, 1])
+    rotate([90, 0, 0]) {
+        linear_extrude(height=base_height)
         polygon([
             [0, 0],
-            [x2 - x1, back_face_depth + epsilon * 2],
-            [x2 - x1 + epsilon, back_face_depth + epsilon * 2],
+            [x2 - x1, back_face_depth],
+            [x2 - x1 + epsilon, back_face_depth],
             [x2 - x1 + epsilon, 0]]);
+        translate([0, 0, -base_height / 4])
+        linear_extrude(height=base_height * 2)
         polygon([
             [-epsilon, general_thickness],
             [-epsilon, back_face_depth + general_thickness + epsilon * 2],
