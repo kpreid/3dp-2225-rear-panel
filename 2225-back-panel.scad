@@ -71,9 +71,6 @@ difference() {
     translate([crt_center_from_left, base_height / 2, -epsilon])
         cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
     
-    // metal plate (assumed transformer mount) end)
-    translate([plate_start, 0, 0]) cube([plate_end - plate_start, 0, plate_depth]);
-    
     // TODO: spaces for those screws in one corner
     // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
     // TODO: spaces for those upper side plastic frame tabs
