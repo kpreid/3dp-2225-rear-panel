@@ -71,7 +71,7 @@ module left_mounting_screw_negative() {
     sphere(r=base_height);
     
     // mounting hook
-    translate([mounting_screw_x_inset, hook_y_inset, -epsilon]) cube([hook_width, hook_height, hook_depth + epsilon]);
+    translate([mounting_screw_x_inset - hook_width / 2, hook_y_inset, -epsilon]) cube([hook_width, hook_height, hook_depth + epsilon]);
 }
 
 module vertical_slot(x) {
