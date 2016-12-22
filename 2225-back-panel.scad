@@ -10,6 +10,11 @@ mounting_screw_hole_diameter = 2;  // NOT MEASURED
 mounting_screw_countersink_diameter = 10;  // NOT MEASURED
 mounting_screw_plate_depth = 4.0;  // chosen BUT NOT WELL
 
+hook_width = 10;  // NOT MEASURED
+hook_height = 10;
+hook_depth = 10;
+hook_y_inset = 5;  // measured mm
+
 plate_start = 32;   // NOT MEASURED
 plate_end = 134;  // measured mm
 plate_depth = 15;  // NOT MEASURED
@@ -32,6 +37,9 @@ module left_mounting_screw_negative() {
 
     // countersink 
     translate([mounting_screw_x_inset, base_height / 2, mounting_screw_plate_depth]) cylinder(r=mounting_screw_countersink_diameter, h=total_depth);
+    
+    // mounting hook
+    translate([mounting_screw_x_inset, hook_y_inset, 0]) cube([hook_width, hook_height, hook_depth]);
 }
 
 difference() {
