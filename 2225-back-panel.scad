@@ -37,6 +37,7 @@ epsilon = 1.0;
 total_depth = sleeve_depth + back_face_depth;
 
 module transition(x1, x2) {
+    d = sign(x2 - x1);
     translate([x1, 0, -epsilon])
     scale([1, -1, 1])
     rotate([90, 0, 0]) {
@@ -44,13 +45,13 @@ module transition(x1, x2) {
         polygon([
             [0, 0],
             [x2 - x1, back_face_depth],
-            [x2 - x1 + epsilon, back_face_depth],
-            [x2 - x1 + epsilon, 0]]);
+            [x2 - x1 + d*epsilon, back_face_depth],
+            [x2 - x1 + d*epsilon, 0]]);
         translate([0, 0, -base_height / 4])
         linear_extrude(height=base_height * 2)
         polygon([
-            [-epsilon, general_thickness],
-            [-epsilon, back_face_depth + general_thickness + epsilon * 2],
+            [-d*epsilon, general_thickness],
+            [-d*epsilon, back_face_depth + general_thickness + epsilon * 2],
             [x2 - x1, back_face_depth + general_thickness + epsilon * 2],
             [x2 - x1 + epsilon, back_face_depth + general_thickness + epsilon * 2]]);
     }
@@ -112,7 +113,8 @@ difference() {
         vertical_slot(crt_center_from_left + i);
     }
     
-    transition(line_cord_end, crt_center_from_left - crt_diameter / 2);
+    transition(line_cord_start, plate_end);
+   transition(line_cord_end, crt_center_from_left - crt_diameter / 2);
 
     // TODO: spaces for those screws in one corner
     // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
