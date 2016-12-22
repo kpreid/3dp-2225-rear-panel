@@ -42,6 +42,11 @@ module left_mounting_screw_negative() {
     translate([mounting_screw_x_inset, hook_y_inset, -epsilon]) cube([hook_width, hook_height, hook_depth + epsilon]);
 }
 
+module vertical_slot(x) {
+    translate([x, -general_thickness * 2, 0])
+      cube([general_thickness, base_height + general_thickness * 4, back_face_depth * 3 - general_thickness]);
+}
+
 difference() {
     // sleeve & surround
     translate([0, 0, -sleeve_depth])
@@ -70,6 +75,11 @@ difference() {
     // CRT end
     translate([crt_center_from_left, base_height / 2, -epsilon])
         cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
+    
+    // ventilation slots
+    for (i = [0.1:0.1:0.9]) {
+        vertical_slot(plate_start + (plate_end - plate_start) * i);
+    }
     
     // TODO: spaces for those screws in one corner
     // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
