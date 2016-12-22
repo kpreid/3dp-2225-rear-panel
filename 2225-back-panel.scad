@@ -38,15 +38,15 @@ total_depth = sleeve_depth + back_face_depth;
 
 module transition(x1, x2) {
     d = sign(x2 - x1);
-    translate([x1, 0, -epsilon])
+    translate([x1, 0, 0])
     scale([1, -1, 1])
     rotate([90, 0, 0]) {
         linear_extrude(height=base_height)
         polygon([
-            [0, 0],
+            [0, -epsilon],
             [x2 - x1, back_face_depth],
             [x2 - x1 + d*epsilon, back_face_depth],
-            [x2 - x1 + d*epsilon, 0]]);
+            [x2 - x1 + d*epsilon, -epsilon]]);
         translate([0, 0, -base_height / 4])
         linear_extrude(height=base_height * 2)
         polygon([
@@ -84,7 +84,7 @@ difference() {
     // sleeve & surround
     translate([0, 0, -sleeve_depth + sleeve_thickness])
     minkowski() {
-        cube([base_width, base_height, total_depth - sleeve_thickness * 2]);
+        cube([base_width, base_height, total_depth - sleeve_thickness]);
         sphere(r=sleeve_thickness);
     }
     // hollow in sleeve for main body
@@ -97,7 +97,7 @@ difference() {
     translate([base_width, 0, 0]) mirror([1, 0, 0]) left_mounting_screw_negative();
     
     // power transformer plate
-    translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, max(plate_depth, back_face_depth - sleeve_thickness) + epsilon]);
+    translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, max(plate_depth, back_face_depth) + epsilon]);
     
     // thinning out line cord area
     translate([line_cord_start, -2*sleeve_thickness, general_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*sleeve_thickness, back_face_depth + epsilon]);
@@ -109,7 +109,7 @@ difference() {
     translate([crt_center_from_left, base_height / 2, -epsilon])
         cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
     // CRT end -- unnecessary material clearing
-    translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth - sleeve_thickness + epsilon]);
+    translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth]);
     
     // ventilation slots
     for (i = [plate_start + 5/*fudge*/:vent_spacing:plate_end]) {
