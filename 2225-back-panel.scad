@@ -8,12 +8,15 @@ back_face_depth = 25.0;  // chosen
 
 mounting_screw_x_inset = 22;  // measured
 mounting_screw_hole_diameter = 2;  // NOT MEASURED
-mounting_screw_countersink_diameter = 20;  // NOT MEASURED
-mounting_screw_plate_depth = 4.0;  // chosen BUT NOT WELL
+mounting_screw_countersink_diameter = 10;  // NOT MEASURED
+mounting_screw_plate_depth = 3.0;  // chosen BUT NOT WELL
+mounting_inset_thick = 5;
+mounting_inset_width = 25;
+mounting_inset_round = 10;
 
 hook_width = 15;  // NOT MEASURED
 hook_height = 10;
-hook_depth = 10;
+hook_depth = 5;
 hook_y_inset = 5;  // measured mm
 
 plate_start = 32;   // NOT MEASURED
@@ -58,6 +61,14 @@ module transition(x1, x2) {
     }
 }
 
+module roundcube(radius, size) {
+    minkowski() {
+        translate([radius, radius, radius])
+        cube(size - [radius, radius, radius] * 2);
+        sphere(r=radius);
+    }
+}
+
 module left_mounting_screw_negative() {
     translate([mounting_screw_x_inset, base_height / 2, -epsilon]) cylinder(r=mounting_screw_hole_diameter, h=total_depth);
 
@@ -65,10 +76,8 @@ module left_mounting_screw_negative() {
     translate([mounting_screw_x_inset, base_height / 2, mounting_screw_plate_depth]) cylinder(r=mounting_screw_countersink_diameter / 2, h=total_depth);
     
     // add'l material clearance
-    translate([mounting_screw_x_inset, base_height / 2, back_face_depth])
-    scale([mounting_screw_countersink_diameter / 2, base_height / 2, back_face_depth - mounting_screw_plate_depth])
-    scale(1/base_height)
-    sphere(r=base_height);
+    translate([mounting_inset_thick, mounting_inset_thick, mounting_inset_thick])
+    roundcube(mounting_inset_round, [mounting_inset_width, base_height - mounting_inset_thick * 2, back_face_depth * 2]);
     
     // mounting hook
     translate([mounting_screw_x_inset - hook_width / 2, hook_y_inset, -epsilon]) cube([hook_width, hook_height, hook_depth + epsilon]);
