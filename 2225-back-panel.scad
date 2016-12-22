@@ -29,6 +29,9 @@ crt_depth = 10;  // measured mm, not used
 crt_clearance_depth = 20;  // picked
 crt_center_from_left = base_width - 70;  // measured mm
 
+vent_slot_y_size = 50;
+vent_spacing = 10;
+
 epsilon = 1.0;
 total_depth = sleeve_depth + back_face_depth;
 
@@ -44,7 +47,9 @@ module left_mounting_screw_negative() {
 
 module vertical_slot(x) {
     translate([x, -general_thickness * 2, 0])
-      cube([general_thickness, base_height + general_thickness * 4, back_face_depth * 3 - general_thickness]);
+        cube([general_thickness, vent_slot_y_size + general_thickness * 2, back_face_depth * 3 - general_thickness]);
+    translate([x, base_height - vent_slot_y_size, 0]) 
+        cube([general_thickness, vent_slot_y_size + general_thickness * 2, back_face_depth * 3 - general_thickness]);
 }
 
 difference() {
@@ -77,8 +82,11 @@ difference() {
         cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
     
     // ventilation slots
-    for (i = [0.1:0.1:0.9]) {
-        vertical_slot(plate_start + (plate_end - plate_start) * i);
+    for (i = [plate_start:vent_spacing:plate_end]) {
+        vertical_slot(i);
+    }
+    for (i = [-crt_diameter / 2:vent_spacing:crt_diameter / 2]) {
+        vertical_slot(crt_center_from_left + i);
     }
     
     // TODO: spaces for those screws in one corner
