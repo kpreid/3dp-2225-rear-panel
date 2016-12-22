@@ -115,11 +115,11 @@ difference() {
     // hole punch for line cord (NOT MEASURED IN ENOUGH DETAIL)
     translate([line_cord_start, line_cord_y_clearance, -epsilon]) cube([line_cord_end - line_cord_start, base_height - line_cord_y_clearance * 2, back_face_depth + epsilon]);
     
-    // CRT end -- fallback
+    // CRT end -- fallback enforce-clearance
     translate([crt_center_from_left, base_height / 2, -epsilon])
         cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
-    // CRT end -- unnecessary material clearing
-    translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth]);
+    // CRT end -- broad material clearing
+    translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth + epsilon]);
     
     // ventilation slots
     for (i = [plate_start + 5/*fudge*/:vent_spacing:plate_end]) {
@@ -130,7 +130,7 @@ difference() {
     }
     
     transition(line_cord_start, plate_end);
-   transition(line_cord_end, crt_center_from_left - crt_diameter / 2);
+   transition(line_cord_end, crt_center_from_left - crt_clearance_diameter / 2);
 
     // TODO: spaces for those screws in one corner
     // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
