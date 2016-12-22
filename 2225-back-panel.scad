@@ -72,7 +72,6 @@ difference() {
     // metal plate (assumed transformer mount) end)
     translate([plate_start, 0, 0]) cube([plate_end - plate_start, 0, plate_depth]);
     
-    // TODO: mounting hooks
     // TODO: spaces for those screws in one corner
     // TODO: holes for side-panel screws
     // TODO: spaces for those upper side plastic frame tabs
