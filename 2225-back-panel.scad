@@ -4,7 +4,7 @@ base_height = 123.5;  // measured mm
 sleeve_depth = 15.0;  // chosen, overkill
 general_thickness = 2.0;  // chosen
 sleeve_thickness = 3;
-back_face_depth = 25.0;  // chosen
+back_face_depth = 12;  // chosen
 
 mounting_screw_x_inset = 22;  // measured
 mounting_screw_hole_diameter = 4;  // #6 thread
@@ -12,7 +12,7 @@ mounting_screw_countersink_diameter = 10;  // overkill
 mounting_screw_plate_depth = 3.0;  // chosen BUT NOT WELL
 mounting_inset_thick = 5;
 mounting_inset_width = 25;
-mounting_inset_round = 10;
+mounting_inset_round = 6;
 
 hook_width = 15;
 hook_height = 10;
@@ -29,8 +29,8 @@ line_cord_y_clearance = 12.0;
 
 crt_diameter = 70;  // measured mm, not used
 crt_clearance_diameter = 75;  // picked
-crt_depth = 10;  // measured mm, not used
-crt_clearance_depth = 20;  // picked
+crt_depth = 10.21;  // measured mm, not used
+crt_clearance_depth = 12;  // picked
 crt_center_from_left = base_width - 70;  // measured mm
 
 side_panel_screw_from_back = 11.5;
@@ -138,6 +138,12 @@ module vertical_slot(x) {
 }
 
 module main_one_piece() {
+    crt_area_start = crt_center_from_left - crt_clearance_diameter / 2;
+    
+    // 45 degree slopes
+    before_line_cord = max(plate_end, line_cord_start - back_face_depth);
+    after_line_cord = min(crt_area_start, line_cord_end + back_face_depth);
+    
     difference() {
         union() {
             // sleeve & surround
@@ -162,7 +168,8 @@ module main_one_piece() {
         translate([base_width, 0, 0]) mirror([1, 0, 0]) left_mounting_screw_negative();
         
         // power transformer plate
-        translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, max(plate_depth, back_face_depth) + epsilon]);
+        // using before_line_cord instead of plate_end to line up
+        translate([plate_start, 0, -epsilon]) cube([before_line_cord - plate_start, base_height, max(plate_depth, back_face_depth) + epsilon]);
         
         // thinning out line cord area
         translate([line_cord_start, cutaway_y, sleeve_thickness]) cube([line_cord_end - line_cord_start, cutaway_height, back_face_depth + epsilon]);
@@ -174,7 +181,7 @@ module main_one_piece() {
         translate([crt_center_from_left, base_height / 2, -epsilon])
             cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
         // CRT end -- broad material clearing
-        translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth + epsilon]);
+        translate([after_line_cord, 0, -epsilon]) cube([crt_clearance_diameter - after_line_cord + crt_area_start, base_height, back_face_depth + epsilon]);
         
         // ventilation slots
         for (i = [plate_start + 5/*fudge*/:vent_spacing:plate_end]) {
@@ -184,8 +191,8 @@ module main_one_piece() {
             vertical_slot(crt_center_from_left + i);
         }
         
-        transition(line_cord_start, plate_end);
-        transition(line_cord_end, crt_center_from_left - crt_clearance_diameter / 2);
+        transition(line_cord_start, before_line_cord);
+        transition(line_cord_end, after_line_cord);
         
         // heatsink screw near plate
         translate([31, 31.2, 0])
