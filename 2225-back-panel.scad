@@ -45,11 +45,13 @@ cutaway_y = line_cord_y_clearance;
 cutaway_height = base_height - line_cord_y_clearance * 2;
 
 
-two_pieces();
+two_pieces_flip();
 
 
-module two_pieces() {
-    x_cut((line_cord_start + line_cord_end) / 2) main_one_piece();
+module two_pieces_flip() {
+    rotate([180, 0, 0])
+    x_cut((line_cord_start + line_cord_end) / 2)
+    main_one_piece();
 }
 
 module transition(x1, x2) {
