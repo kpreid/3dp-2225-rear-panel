@@ -33,6 +33,8 @@ crt_depth = 10;  // measured mm, not used
 crt_clearance_depth = 20;  // picked
 crt_center_from_left = base_width - 70;  // measured mm
 
+side_panel_screw_from_back = 11.5;
+
 vent_slot_y_size = 50;
 vent_spacing = 10;
 
@@ -84,6 +86,11 @@ module left_mounting_screw_negative() {
     // mounting hook
     translate([mounting_screw_x_inset - hook_width / 2, hook_y_inset, -epsilon])
     cube([hook_width, hook_height, hook_depth + epsilon]);
+    
+    // side panel attachment screws
+    translate([0, base_height / 2, -side_panel_screw_from_back])
+    rotate([0, -90, 0])
+    screw_cutout_negative();
 }
 
 module screw_cutout_negative() {
@@ -171,7 +178,6 @@ difference() {
         screw_cutout_negative();
     }
     
-    // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
-    // TODO: spaces for those upper side plastic frame tabs -- no, not needed as long as we are doing the 'airy' version
+    // don't have spaces for those upper side plastic frame tabs -- no, not needed as long as we are doing the 'airy' version
 }
 
