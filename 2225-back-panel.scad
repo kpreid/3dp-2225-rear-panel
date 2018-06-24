@@ -199,18 +199,25 @@ module main_one_piece() {
 module x_cut(x) {
     translate([1, 0, 0])
     intersection() {
-        translate([x, 0, 0]) x_halfspace();
+        translate([x, 0, 0]) x_face();
         children();
     }
     
     translate([-1, 0, 0])
-    intersection() {
-        translate([x, 0, 0]) mirror([1, 0, 0]) x_halfspace();
+    difference() {
         children();
+        translate([x, 0, 0]) x_face();
     }
 }
 
-module x_halfspace() {
-    translate([0, -5000, -5000])
+module x_face() {
+    zag = 3;
+    
+    translate([zag / 2, -5000, -5000])
     cube([10000, 10000, 10000]);
+    
+    for (i = [-10:zag * 2:400]) {
+        translate([zag / 2, i, 0])
+        cylinder(r=zag, h=10000, center=true, $fn=4);
+    }
 }
