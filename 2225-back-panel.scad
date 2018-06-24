@@ -92,6 +92,19 @@ module screw_cutout_negative() {
     cylinder(d=12, h=5);
 }
 
+module foot_socket() {
+    depth = 2;
+    corner_inset = 6;
+    translate([corner_inset, 0, back_face_depth - corner_inset])
+    rotate([90, 0, 0]) 
+    scale([1, 1, 1])
+    difference() {
+        cylinder(d=16, h=sleeve_thickness + depth, $fn=32);
+        translate([0, 0, sleeve_thickness])
+        cylinder(d=14, h=depth + epsilon, $fn=32);
+    }
+}
+
 module vertical_slot(x) {
     translate([x, -general_thickness * 2, 0])
         cube([general_thickness, vent_slot_y_size + sleeve_thickness * 2, back_face_depth * 3 - sleeve_thickness]);
@@ -100,12 +113,19 @@ module vertical_slot(x) {
 }
 
 difference() {
-    // sleeve & surround
-    translate([0, 0, -sleeve_depth + sleeve_thickness])
-    minkowski() {
-        cube([base_width, base_height, total_depth - sleeve_thickness]);
-        sphere(r=sleeve_thickness);
+    union() {
+        // sleeve & surround
+        translate([0, 0, -sleeve_depth + sleeve_thickness])
+        minkowski() {
+            cube([base_width, base_height, total_depth - sleeve_thickness]);
+            sphere(r=sleeve_thickness);
+        }
+        
+        // rubber foot cutout
+        foot_socket();
+        translate([base_width, 0, 0]) mirror([1, 0, 0]) foot_socket();
     }
+    
     // hollow in sleeve for main body
     color("white")
     translate([0, 0, -sleeve_depth - epsilon])
