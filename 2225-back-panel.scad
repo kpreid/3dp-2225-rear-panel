@@ -1,27 +1,27 @@
 
 base_width = 320.0;  // measured mm
-base_height = 123.0;  // measured mm
+base_height = 123.5;  // measured mm
 sleeve_depth = 15.0;  // chosen, overkill
 general_thickness = 2.0;  // chosen
-sleeve_thickness = 2.5;
+sleeve_thickness = 3;
 back_face_depth = 25.0;  // chosen
 
 mounting_screw_x_inset = 22;  // measured
-mounting_screw_hole_diameter = 2;  // NOT MEASURED
-mounting_screw_countersink_diameter = 10;  // NOT MEASURED
+mounting_screw_hole_diameter = 4;  // #6 thread
+mounting_screw_countersink_diameter = 10;  // overkill
 mounting_screw_plate_depth = 3.0;  // chosen BUT NOT WELL
 mounting_inset_thick = 5;
 mounting_inset_width = 25;
 mounting_inset_round = 10;
 
-hook_width = 15;  // NOT MEASURED
+hook_width = 15;
 hook_height = 10;
 hook_depth = 5;
 hook_y_inset = 5;  // measured mm
 
-plate_start = 32;   // NOT MEASURED
+plate_start = 35;   // measured mm
 plate_end = 134;  // measured mm
-plate_depth = 15;  // NOT MEASURED
+plate_depth = 8;  // measured mm
 
 line_cord_start = 160.0;
 line_cord_end = 190.0;
@@ -70,17 +70,26 @@ module roundcube(radius, size) {
 }
 
 module left_mounting_screw_negative() {
-    translate([mounting_screw_x_inset, base_height / 2, -epsilon]) cylinder(r=mounting_screw_hole_diameter, h=total_depth);
+    translate([mounting_screw_x_inset, base_height / 2, -epsilon])
+    cylinder(d=mounting_screw_hole_diameter, h=total_depth);
 
     // countersink
-    translate([mounting_screw_x_inset, base_height / 2, mounting_screw_plate_depth]) cylinder(r=mounting_screw_countersink_diameter / 2, h=total_depth);
+    translate([mounting_screw_x_inset, base_height / 2, mounting_screw_plate_depth])
+    cylinder(d=mounting_screw_countersink_diameter, h=total_depth);
     
     // add'l material clearance
     translate([mounting_inset_thick, mounting_inset_thick, mounting_inset_thick])
     roundcube(mounting_inset_round, [mounting_inset_width, base_height - mounting_inset_thick * 2, back_face_depth * 2]);
     
     // mounting hook
-    translate([mounting_screw_x_inset - hook_width / 2, hook_y_inset, -epsilon]) cube([hook_width, hook_height, hook_depth + epsilon]);
+    translate([mounting_screw_x_inset - hook_width / 2, hook_y_inset, -epsilon])
+    cube([hook_width, hook_height, hook_depth + epsilon]);
+}
+
+module screw_cutout_negative() {
+    // diameter oversized for positioning error
+    translate([0, 0, -epsilon])
+    cylinder(d=12, h=5);
 }
 
 module vertical_slot(x) {
@@ -130,10 +139,19 @@ difference() {
     }
     
     transition(line_cord_start, plate_end);
-   transition(line_cord_end, crt_center_from_left - crt_clearance_diameter / 2);
-
-    // TODO: spaces for those screws in one corner
+    transition(line_cord_end, crt_center_from_left - crt_clearance_diameter / 2);
+    
+    // heatsink screw near plate
+    translate([31, 31.2, 0])
+    screw_cutout_negative();
+    // heatsink screws near crt
+    translate([base_width - 27.51, 17.45, 0]) {
+        screw_cutout_negative();
+        translate([-25.2, 0, 0])
+        screw_cutout_negative();
+    }
+    
     // TODO: holes for side-panel screws (do they pass through or do they need slide-in clearance?
-    // TODO: spaces for those upper side plastic frame tabs
+    // TODO: spaces for those upper side plastic frame tabs -- no, not needed as long as we are doing the 'airy' version
 }
 
