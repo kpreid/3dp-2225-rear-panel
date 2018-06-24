@@ -16,7 +16,7 @@ mounting_inset_round = 10;
 
 hook_width = 15;
 hook_height = 10;
-hook_depth = 5;
+hook_depth = 4;
 hook_y_inset = 5;  // measured mm
 
 plate_start = 35;   // measured mm
@@ -35,7 +35,7 @@ crt_center_from_left = base_width - 70;  // measured mm
 
 side_panel_screw_from_back = 11.5;
 
-vent_slot_y_size = 50;
+vent_slot_y_size = 20;
 vent_spacing = 10;
 
 epsilon = 1.0;
@@ -113,15 +113,20 @@ module screw_cutout_negative() {
 }
 
 module foot_socket() {
+    foot_dia = 14;
+    wall = 1;
     depth = 2;
-    corner_inset = 6;
+    corner_inset = 8;
     translate([corner_inset, 0, back_face_depth - corner_inset])
     rotate([90, 0, 0]) 
-    scale([1, 1, 1])
-    difference() {
-        cylinder(d=16, h=sleeve_thickness + depth, $fn=32);
-        translate([0, 0, sleeve_thickness])
-        cylinder(d=14, h=depth + epsilon, $fn=32);
+    scale([1, 1, 1]) {
+        cylinder(d=foot_dia + wall * 2 + depth * 2, h=sleeve_thickness, $fn=32);
+
+        translate([0, 0, sleeve_thickness]) 
+        difference() {
+            cylinder(d1=foot_dia + wall * 2 + depth * 2, d2=foot_dia + wall * 2, h=depth, $fn=32);
+            cylinder(d=foot_dia, h=depth + epsilon, $fn=32);
+        }
     }
 }
 
