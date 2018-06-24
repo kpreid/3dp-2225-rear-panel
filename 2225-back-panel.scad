@@ -25,7 +25,7 @@ plate_depth = 8;  // measured mm
 
 line_cord_start = 160.0;
 line_cord_end = 190.0;
-line_cord_y_clearance = 10.0;
+line_cord_y_clearance = 12.0;
 
 crt_diameter = 70;  // measured mm, not used
 crt_clearance_diameter = 75;  // picked
@@ -41,19 +41,30 @@ vent_spacing = 10;
 epsilon = 1.0;
 total_depth = sleeve_depth + back_face_depth;
 
+cutaway_y = line_cord_y_clearance;
+cutaway_height = base_height - line_cord_y_clearance * 2;
+
+
+two_pieces();
+
+
+module two_pieces() {
+    x_cut((line_cord_start + line_cord_end) / 2) main_one_piece();
+}
+
 module transition(x1, x2) {
     d = sign(x2 - x1);
-    translate([x1, 0, 0])
+    translate([x1, cutaway_y, 0])
     scale([1, -1, 1])
     rotate([90, 0, 0]) {
-        linear_extrude(height=base_height)
+        linear_extrude(height=cutaway_height)
         polygon([
             [0, -epsilon],
             [x2 - x1, back_face_depth],
             [x2 - x1 + d*epsilon, back_face_depth],
             [x2 - x1 + d*epsilon, -epsilon]]);
-        translate([0, 0, -base_height / 4])
-        linear_extrude(height=base_height * 2)
+        translate([0, 0, 0])
+        linear_extrude(height=cutaway_height)
         polygon([
             [-d*epsilon, sleeve_thickness],
             [-d*epsilon, back_face_depth + sleeve_thickness + epsilon * 2],
@@ -119,65 +130,87 @@ module vertical_slot(x) {
         cube([general_thickness, vent_slot_y_size + sleeve_thickness * 2, back_face_depth * 3 - sleeve_thickness]);
 }
 
-difference() {
-    union() {
-        // sleeve & surround
-        translate([0, 0, -sleeve_depth + sleeve_thickness])
-        minkowski() {
-            cube([base_width, base_height, total_depth - sleeve_thickness]);
-            sphere(r=sleeve_thickness);
+module main_one_piece() {
+    difference() {
+        union() {
+            // sleeve & surround
+            translate([0, 0, -sleeve_depth + sleeve_thickness])
+            minkowski() {
+                cube([base_width, base_height, total_depth - sleeve_thickness]);
+                sphere(r=sleeve_thickness);
+            }
+            
+            // rubber foot cutout
+            foot_socket();
+            translate([base_width, 0, 0]) mirror([1, 0, 0]) foot_socket();
         }
         
-        // rubber foot cutout
-        foot_socket();
-        translate([base_width, 0, 0]) mirror([1, 0, 0]) foot_socket();
-    }
-    
-    // hollow in sleeve for main body
-    color("white")
-    translate([0, 0, -sleeve_depth - epsilon])
-      cube([base_width, base_height, sleeve_depth + epsilon]);
-    
-    // mounting screws & matching things
-    left_mounting_screw_negative();
-    translate([base_width, 0, 0]) mirror([1, 0, 0]) left_mounting_screw_negative();
-    
-    // power transformer plate
-    translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, max(plate_depth, back_face_depth) + epsilon]);
-    
-    // thinning out line cord area
-    translate([line_cord_start, -2*sleeve_thickness, sleeve_thickness]) cube([line_cord_end - line_cord_start, base_height + 4*sleeve_thickness, back_face_depth + epsilon]);
-    
-    // hole punch for line cord (NOT MEASURED IN ENOUGH DETAIL)
-    translate([line_cord_start, line_cord_y_clearance, -epsilon]) cube([line_cord_end - line_cord_start, base_height - line_cord_y_clearance * 2, back_face_depth + epsilon]);
-    
-    // CRT end -- fallback enforce-clearance
-    translate([crt_center_from_left, base_height / 2, -epsilon])
-        cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
-    // CRT end -- broad material clearing
-    translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth + epsilon]);
-    
-    // ventilation slots
-    for (i = [plate_start + 5/*fudge*/:vent_spacing:plate_end]) {
-        vertical_slot(i);
-    }
-    for (i = [-crt_diameter / 2 + 5/*fudge*/:vent_spacing:crt_diameter / 2]) {
-        vertical_slot(crt_center_from_left + i);
-    }
-    
-    transition(line_cord_start, plate_end);
-    transition(line_cord_end, crt_center_from_left - crt_clearance_diameter / 2);
-    
-    // heatsink screw near plate
-    translate([31, 31.2, 0])
-    screw_cutout_negative();
-    // heatsink screws near crt
-    translate([base_width - 27.51, 17.45, 0]) {
+        // hollow in sleeve for main body
+        color("white")
+        translate([0, 0, -sleeve_depth - epsilon])
+          cube([base_width, base_height, sleeve_depth + epsilon]);
+        
+        // mounting screws & matching things
+        left_mounting_screw_negative();
+        translate([base_width, 0, 0]) mirror([1, 0, 0]) left_mounting_screw_negative();
+        
+        // power transformer plate
+        translate([plate_start, 0, -epsilon]) cube([plate_end - plate_start, base_height, max(plate_depth, back_face_depth) + epsilon]);
+        
+        // thinning out line cord area
+        translate([line_cord_start, cutaway_y, sleeve_thickness]) cube([line_cord_end - line_cord_start, cutaway_height, back_face_depth + epsilon]);
+        
+        // hole punch for line cord (NOT MEASURED IN ENOUGH DETAIL)
+        translate([line_cord_start, line_cord_y_clearance, -epsilon]) cube([line_cord_end - line_cord_start, base_height - line_cord_y_clearance * 2, back_face_depth + epsilon]);
+        
+        // CRT end -- fallback enforce-clearance
+        translate([crt_center_from_left, base_height / 2, -epsilon])
+            cylinder(r=crt_clearance_diameter / 2, h=crt_clearance_depth + epsilon);
+        // CRT end -- broad material clearing
+        translate([crt_center_from_left - crt_clearance_diameter / 2, 0, -epsilon]) cube([crt_clearance_diameter, base_height, back_face_depth + epsilon]);
+        
+        // ventilation slots
+        for (i = [plate_start + 5/*fudge*/:vent_spacing:plate_end]) {
+            vertical_slot(i);
+        }
+        for (i = [-crt_diameter / 2 + 5/*fudge*/:vent_spacing:crt_diameter / 2]) {
+            vertical_slot(crt_center_from_left + i);
+        }
+        
+        transition(line_cord_start, plate_end);
+        transition(line_cord_end, crt_center_from_left - crt_clearance_diameter / 2);
+        
+        // heatsink screw near plate
+        translate([31, 31.2, 0])
         screw_cutout_negative();
-        translate([-25.2, 0, 0])
-        screw_cutout_negative();
+        // heatsink screws near crt
+        translate([base_width - 27.51, 17.45, 0]) {
+            screw_cutout_negative();
+            translate([-25.2, 0, 0])
+            screw_cutout_negative();
+        }
+        
+        // don't have spaces for those upper side plastic frame tabs -- no, not needed as long as we are doing the 'airy' version
     }
-    
-    // don't have spaces for those upper side plastic frame tabs -- no, not needed as long as we are doing the 'airy' version
 }
 
+// --- generic helpers 
+
+module x_cut(x) {
+    translate([1, 0, 0])
+    intersection() {
+        translate([x, 0, 0]) x_halfspace();
+        children();
+    }
+    
+    translate([-1, 0, 0])
+    intersection() {
+        translate([x, 0, 0]) mirror([1, 0, 0]) x_halfspace();
+        children();
+    }
+}
+
+module x_halfspace() {
+    translate([0, -5000, -5000])
+    cube([10000, 10000, 10000]);
+}
