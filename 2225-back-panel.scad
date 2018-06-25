@@ -5,6 +5,7 @@ sleeve_depth = 15.0;  // chosen, overkill
 general_thickness = 2.0;  // chosen
 sleeve_thickness = 3;
 back_face_depth = 12;  // chosen
+sleeve_corner_round_radius = 2.5;  // measured mm
 
 mounting_screw_x_inset = 22;  // measured
 mounting_screw_hole_diameter = 4;  // #6 thread
@@ -76,11 +77,19 @@ module transition(x1, x2) {
     }
 }
 
-module roundcube(radius, size) {
+module roundcube_sphere(radius, size) {
     minkowski() {
         translate([radius, radius, radius])
         cube(size - [radius, radius, radius] * 2);
         sphere(r=radius);
+    }
+}
+
+module roundcube_cylinder(radius, size) {
+    minkowski() {
+        translate([radius, radius, radius])
+        cube(size - [radius, radius, radius] * 2);
+        cylinder(r=radius, h=radius * 2, center=true, $fn=16);
     }
 }
 
@@ -94,7 +103,7 @@ module left_mounting_screw_negative() {
     
     // add'l material clearance
     translate([mounting_inset_thick, mounting_inset_thick, mounting_inset_thick])
-    roundcube(mounting_inset_round, [mounting_inset_width, base_height - mounting_inset_thick * 2, back_face_depth * 2]);
+    roundcube_sphere(mounting_inset_round, [mounting_inset_width, base_height - mounting_inset_thick * 2, back_face_depth * 2]);
     
     // mounting hook
     translate([mounting_screw_x_inset - hook_width / 2, hook_y_inset, -epsilon])
@@ -149,7 +158,10 @@ module main_one_piece() {
             // sleeve & surround
             translate([0, 0, -sleeve_depth + sleeve_thickness])
             minkowski() {
-                cube([base_width, base_height, total_depth - sleeve_thickness]);
+                roundcube_cylinder(sleeve_corner_round_radius, [
+                    base_width,
+                    base_height,
+                    total_depth - sleeve_thickness]);
                 sphere(r=sleeve_thickness);
             }
             
@@ -161,7 +173,7 @@ module main_one_piece() {
         // hollow in sleeve for main body
         color("white")
         translate([0, 0, -sleeve_depth - epsilon])
-          cube([base_width, base_height, sleeve_depth + epsilon]);
+          roundcube_cylinder(sleeve_corner_round_radius, [base_width, base_height, sleeve_depth + epsilon]);
         
         // mounting screws & matching things
         left_mounting_screw_negative();
