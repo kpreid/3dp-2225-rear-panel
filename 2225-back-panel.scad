@@ -36,10 +36,13 @@ crt_center_from_left = base_width - 70;  // measured mm
 
 side_panel_screw_from_back = 11.5;
 
+case_seam_width = 30;  // measured mm, generous overestimate
+case_seam_thick = 1.2;
+
 vent_slot_y_size = 20;
 vent_spacing = 10;
 
-epsilon = 1.0;
+epsilon = 0.01;
 total_depth = sleeve_depth + back_face_depth;
 
 cutaway_y = line_cord_y_clearance;
@@ -219,6 +222,10 @@ module main_one_piece() {
             translate([-25.2, 0, 0])
             screw_cutout_negative();
         }
+        
+        // case overlap seam
+        translate([base_width / 2 - case_seam_width / 2, -case_seam_thick + epsilon, -sleeve_depth])
+        cube([case_seam_width, case_seam_thick, sleeve_depth]);
         
         // don't have spaces for those upper side plastic frame tabs -- no, not needed as long as we are doing the 'airy' version
     }
