@@ -1,5 +1,5 @@
 
-base_width = 320.0;  // measured mm
+base_width = 320.0 + 0.25;  // measured mm, plus tweak after fitting
 base_height = 123.5;  // measured mm
 sleeve_depth = 15.0;  // chosen, overkill
 general_thickness = 2.0;  // chosen
