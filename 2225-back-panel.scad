@@ -112,7 +112,11 @@ module left_mounting_screw_negative() {
     // side panel attachment screws
     translate([0, base_height / 2, -side_panel_screw_from_back])
     rotate([0, -90, 0])
-    screw_cutout_negative();
+    hull() {
+        screw_cutout_negative();
+        translate([-1000, 0, 0])
+        screw_cutout_negative();
+    }
 }
 
 module screw_cutout_negative() {
