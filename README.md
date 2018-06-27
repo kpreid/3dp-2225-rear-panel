@@ -1,6 +1,11 @@
 # What is it?
 
-This is a replacement rear panel for a Tektronix 2225 CRT oscilloscope. If your scope is missing its rear panel, this will provide rear feet (rubber stick-on feet can be inserted), and cover the semi-exposed back end of the CRT (high voltage!).
+This is a 3D-printable replacement rear panel for a Tektronix 2225 CRT oscilloscope. If your scope, like mine, is missing its original plastic rear panel, this will provide:
+
+* Rear feet. Rubber stick-on feet (≤ 14 mm diameter) can be inserted.
+* Protection for the exposed end of the CRT.
+
+It does not have any power cord management features.
 
 It requires 180 mm × 132 mm of print area, and prints in two parts to glue together.
 
