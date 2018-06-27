@@ -54,7 +54,8 @@ plastic_tab_clearance_size = [15, 7, 4];
 
 two_pieces_flip();
 
-
+// Cut into two pieces for reduced area requirements. Also flip over so that the flat side is down.
+// If your printer is large enough and does not require layers to be supported from below, you can skip this and use main_one_piece().
 module two_pieces_flip() {
     rotate([180, 0, 0])
     x_cut((line_cord_start + line_cord_end) / 2)
@@ -157,9 +158,9 @@ module vertical_slot(x) {
 }
 
 module plastic_tab_clearance(x) {
-        translate([x - plastic_tab_clearance_size.x / 2, base_height, -epsilon])
-        mirror([0, 1, 0])
-        #cube(plastic_tab_clearance_size);
+    translate([x - plastic_tab_clearance_size.x / 2, base_height, -epsilon])
+    mirror([0, 1, 0])
+    cube(plastic_tab_clearance_size);
 }
 
 module main_one_piece() {
