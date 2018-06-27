@@ -48,6 +48,9 @@ total_depth = sleeve_depth + back_face_depth;
 cutaway_y = line_cord_y_clearance;
 cutaway_height = base_height - line_cord_y_clearance * 2;
 
+plastic_tab_from_left_1 = 128;
+plastic_tab_from_left_2 = 197;
+plastic_tab_clearance_size = [15, 7, 4];
 
 two_pieces_flip();
 
@@ -153,6 +156,12 @@ module vertical_slot(x) {
         cube([general_thickness, vent_slot_y_size + sleeve_thickness * 2, back_face_depth * 3 - sleeve_thickness]);
 }
 
+module plastic_tab_clearance(x) {
+        translate([x - plastic_tab_clearance_size.x / 2, base_height, -epsilon])
+        mirror([0, 1, 0])
+        #cube(plastic_tab_clearance_size);
+}
+
 module main_one_piece() {
     crt_area_start = crt_center_from_left - crt_clearance_diameter / 2;
     
@@ -193,7 +202,7 @@ module main_one_piece() {
         // thinning out line cord area
         translate([line_cord_start, cutaway_y, sleeve_thickness]) cube([line_cord_end - line_cord_start, cutaway_height, back_face_depth + epsilon]);
         
-        // hole punch for line cord (NOT MEASURED IN ENOUGH DETAIL)
+        // hole punch for line cord (rough, not exact fitting)
         translate([line_cord_start, line_cord_y_clearance, -epsilon]) cube([line_cord_end - line_cord_start, base_height - line_cord_y_clearance * 2, back_face_depth + epsilon]);
         
         // CRT end -- fallback enforce-clearance
@@ -222,6 +231,10 @@ module main_one_piece() {
             translate([-25.2, 0, 0])
             screw_cutout_negative();
         }
+        
+        // plastic tabs sticking out back
+        plastic_tab_clearance(plastic_tab_from_left_1);
+        plastic_tab_clearance(plastic_tab_from_left_2);
         
         // case overlap seam
         translate([base_width / 2 - case_seam_width / 2, -case_seam_thick + epsilon, -sleeve_depth])
