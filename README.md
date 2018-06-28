@@ -18,3 +18,7 @@ It requires 180 mm × 132 mm of print area, and prints in two parts to glue toge
 * This is not a particularly refined model; I just wanted to get it working and sturdy, and I didn't want to wait for many multi-hour prints. So the fit is not perfect and more plastic is used than probably necessary.
 
 * My oscilloscope was also missing its front feet and pivoting handle. (I vaguely heard that this may be the result of it having been rack-mounted in the past.) Therefore, I have not attempted to match the height of the rear feet to the front, or test that they work with the scope tilted up.
+
+# License
+
+This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
